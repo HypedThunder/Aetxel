@@ -16,10 +16,10 @@ namespace EntityStates.Aetxel.Weapon3
 			base.OnEnter();
 			this.duration = 0.01f / this.attackSpeedStat;
 			Util.PlaySound(EntityStates.HermitCrab.FireMortar.mortarSoundString, base.gameObject);
-			base.PlayAnimation("Gesture", "ChargeFireball", "ChargeFireball.playbackRate", 0.2f);
+			base.PlayAnimation("Gesture", "Bite", "Bite.playbackRate", 0.6f);
 			base.characterBody.AddTimedBuff(BuffIndex.CloakSpeed, 3f);
 			base.characterBody.AddTimedBuff(BuffIndex.Warbanner, 3f);
-			EffectManager.SimpleMuzzleFlash(FireMegaFireball.muzzleflashEffectPrefab, base.gameObject, "MuzzleMouth", false);
+			EffectManager.SimpleMuzzleFlash(FireMegaFireball.muzzleflashEffectPrefab, base.gameObject, "MuzzleCenter", false);
 		}
 
 		// Token: 0x060039A8 RID: 14760 RVA: 0x000EC8C8 File Offset: 0x000EAAC8

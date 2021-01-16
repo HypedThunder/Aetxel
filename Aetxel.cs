@@ -15,13 +15,14 @@ using EntityStates.Aetxel.Weapon;
 using EntityStates.Aetxel.Weapon2;
 using EntityStates.Aetxel.Weapon3;
 using EntityStates.Aetxel.Weapon4;
+using EntityStates.Aetxel.Weapon5;
 using RoR2.Projectile;
 
 namespace Aetxel
 {
     [BepInDependency("com.bepis.r2api")]
 
-    [BepInPlugin(MODUID, "Aetxel", "0.0.1")]
+    [BepInPlugin(MODUID, "Aetxel", "0.0.2")]
     [R2APISubmoduleDependency(nameof(PrefabAPI), nameof(SurvivorAPI), nameof(LoadoutAPI), nameof(LanguageAPI), nameof(BuffAPI), nameof(EffectAPI))]
 
     public class AetxelMod : BaseUnityPlugin
@@ -36,8 +37,7 @@ namespace Aetxel
 
         public static GameObject aetxelCrosshair;
 
-        private static readonly Color CHAR_COLOR = new Color(0.5f, 0.1f, 0.5f);
-        private static readonly Color HEAL_COLOR = new Color(0.5f, 0.1f, 0.5f);
+        private static readonly Color CHAR_COLOR = new Color(0.6f, 0.15f, 0.6f);
 
         private static ConfigEntry<float> baseHealth;
         private static ConfigEntry<float> healthGrowth;
@@ -48,9 +48,9 @@ namespace Aetxel
         private static ConfigEntry<float> regenGrowth;
         private static ConfigEntry<float> baseSpeed;
 
-        public static GameObject Fireball;
-
         public static GameObject Bomb;
+
+        public static GameObject Tornado;
 
         public static BuffIndex syringebuff;
 
@@ -95,7 +95,7 @@ namespace Aetxel
             AetxelMod.syringebuff = BuffAPI.Add(customBuff);
         }
 
-                    private void RegisterCharacter()
+           private void RegisterCharacter()
         {
             //create a clone of the grovetender prefab
             myCharacter = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("Prefabs/CharacterBodies/LemurianBody"), "Prefabs/CharacterBodies/AetxelBody", true);
@@ -142,11 +142,11 @@ namespace Aetxel
 
 
 
-            string desc = "A'etxel is a heavy close range bruiser that fire and scavenged tools to crush enemies<color=#CCD3E0>" + Environment.NewLine + Environment.NewLine;
+            string desc = "A'etxel is a heavy close range bruiser that makes use of fire and scavenged tools to crush enemies.<color=#CCD3E0>" + Environment.NewLine + Environment.NewLine;
             desc = desc + "< ! > Scavenged Scattergun fires faster if you mash." + Environment.NewLine + Environment.NewLine;
-            desc = desc + "< ! > Precise Flame always lands where you aim it, so make sure to aim well." + Environment.NewLine + Environment.NewLine;
-            desc = desc + "< ! > Adrenaline Rush is good for mobility and offense." + Environment.NewLine + Environment.NewLine;
-            desc = desc + "< ! > Volatile Scrap is great for clearing out crowds easily.</color>" + Environment.NewLine;
+            desc = desc + "< ! > Scorching Winds always deals the same amount of damage, no matter how far you are from the target." + Environment.NewLine + Environment.NewLine;
+            desc = desc + "< ! > Heated Hook is good for mobility and offense." + Environment.NewLine + Environment.NewLine;
+            desc = desc + "< ! > Molten Earth is great for clearing out crowds easily.</color>" + Environment.NewLine;
 
             LanguageAPI.Add("AETXEL_NAME", "A'etxel");
             LanguageAPI.Add("AETXEL_DESCRIPTION", desc);
@@ -170,7 +170,7 @@ namespace Aetxel
             charBody.levelArmor = 0;
             charBody.baseCrit = 1;
 
-            charBody.preferredPodPrefab = Resources.Load<GameObject>("Prefabs/CharacterBodies/CommandoBody").GetComponent<CharacterBody>().preferredPodPrefab;
+            charBody.preferredPodPrefab = Resources.Load<GameObject>("Prefabs/CharacterBodies/CrocoBody").GetComponent<CharacterBody>().preferredPodPrefab;
 
 
             //create a survivordef for our grovetender
@@ -202,6 +202,7 @@ namespace Aetxel
         private void RegisterStates()
         {
             LoadoutAPI.AddSkill(typeof(Scattergun));
+            LoadoutAPI.AddSkill(typeof(Rifle));
             LoadoutAPI.AddSkill(typeof(Fireball));
             LoadoutAPI.AddSkill(typeof(Speed));
             LoadoutAPI.AddSkill(typeof(Bomb));
@@ -245,6 +246,7 @@ namespace Aetxel
             mySkillDef.requiredStock = 1;
             mySkillDef.shootDelay = 0f;
             mySkillDef.stockToConsume = 1;
+            mySkillDef.icon = Assets.icon1;
             mySkillDef.skillDescriptionToken = "AETXEL_PRIMARY_SHOTGUN_DESCRIPTION";
             mySkillDef.skillName = "AETXEL_PRIMARY_SHOTGUN_NAME";
             mySkillDef.skillNameToken = "AETXEL_PRIMARY_SHOTGUN_NAME";
@@ -262,6 +264,37 @@ namespace Aetxel
                 unlockableName = "",
                 viewableNode = new ViewablesCatalog.Node(mySkillDef.skillNameToken, false, null)
             };
+            LanguageAPI.Add("AETXEL_PRIMARY_RIFLE_NAME", "Scavenged Rifle");
+            LanguageAPI.Add("AETXEL_PRIMARY_RIFLE_DESCRIPTION", "Fire a round of piercing bullets, dealing <style=cIsDamage>3x100%</style> damage.");
+            SkillDef skillDef5 = ScriptableObject.CreateInstance<SkillDef>();
+            skillDef5.activationState = new SerializableEntityStateType(typeof(Rifle));
+            skillDef5.activationStateMachineName = "Weapon";
+            skillDef5.baseMaxStock = 1;
+            skillDef5.baseRechargeInterval = 0f;
+            skillDef5.beginSkillCooldownOnSkillEnd = true;
+            skillDef5.canceledFromSprinting = false;
+            skillDef5.fullRestockOnAssign = true;
+            skillDef5.interruptPriority = InterruptPriority.Any;
+            skillDef5.isBullets = false;
+            skillDef5.isCombatSkill = true;
+            skillDef5.mustKeyPress = false;
+            skillDef5.noSprint = true;
+            skillDef5.rechargeStock = 1;
+            skillDef5.requiredStock = 1;
+            skillDef5.shootDelay = 0f;
+            skillDef5.stockToConsume = 1;
+            skillDef5.icon = Assets.icon1b;
+            skillDef5.skillDescriptionToken = "AETXEL_PRIMARY_RIFLE_DESCRIPTION";
+            skillDef5.skillName = "AETXEL_PRIMARY_RIFLE_NAME";
+            skillDef5.skillNameToken = "AETXEL_PRIMARY_RIFLE_NAME";
+            LoadoutAPI.AddSkillDef(skillDef5);
+            Array.Resize<SkillFamily.Variant>(ref skillFamily2.variants, skillFamily2.variants.Length + 1);
+            skillFamily2.variants[skillFamily2.variants.Length - 1] = new SkillFamily.Variant
+            {
+                skillDef = skillDef5,
+                unlockableName = "",
+                viewableNode = new ViewablesCatalog.Node(skillDef5.skillNameToken, false, null)
+            };
         }
 
 
@@ -269,16 +302,16 @@ namespace Aetxel
         {
             SkillLocator component = myCharacter.GetComponent<SkillLocator>();
 
-            string desc = "Vomit out a high speed concentration of flame, dealing <style=cIsDamage>500% damage</style> and <style=cIsUtility>igniting enemies</style>.";
+            string desc = "Vomit out a tornado of flame, dealing <style=cIsDamage>200% damage</style> and <style=cIsUtility>igniting enemies</style>.";
 
-            LanguageAPI.Add("AETXEL_SECONDARY_FIREBALL_NAME", "Precise Flame");
+            LanguageAPI.Add("AETXEL_SECONDARY_FIREBALL_NAME", "Scorching Winds");
             LanguageAPI.Add("AETXEL_SECONDARY_FIREBALL_DESCRIPTION", desc);
 
             SkillDef mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
             mySkillDef.activationState = new SerializableEntityStateType(typeof(Fireball));
             mySkillDef.activationStateMachineName = "Weapon";
             mySkillDef.baseMaxStock = 1;
-            mySkillDef.baseRechargeInterval = 3f;
+            mySkillDef.baseRechargeInterval = 4f;
             mySkillDef.beginSkillCooldownOnSkillEnd = false;
             mySkillDef.canceledFromSprinting = false;
             mySkillDef.fullRestockOnAssign = true;
@@ -291,6 +324,7 @@ namespace Aetxel
             mySkillDef.requiredStock = 1;
             mySkillDef.shootDelay = 0f;
             mySkillDef.stockToConsume = 1;
+            mySkillDef.icon = Assets.icon2;
             mySkillDef.skillDescriptionToken = "AETXEL_SECONDARY_FIREBALL_DESCRIPTION";
             mySkillDef.skillName = "AETXEL_SECONDARY_FIREBALL_NAME";
             mySkillDef.skillNameToken = "AETXEL_SECONDARY_FIREBALL_NAME";
@@ -317,15 +351,15 @@ namespace Aetxel
         {
             SkillLocator component = myCharacter.GetComponent<SkillLocator>();
 
-            string desc = "Gain a temporary <style=cIsUtility>burst of adrenaline</style>, increasing your <style=cIsUtility>attack and movement speed</style>.";
+            string desc = "Throw a hook forward, dealing <style=cIsDamage>500% damage</style> and <style=cIsUtility>pulling yourself</style> towards the location of the hook.";
 
-            LanguageAPI.Add("AETXEL_UTILITY_ROLL_NAME", "Adrenaline Rush");
-            LanguageAPI.Add("AETXEL_UTILITY_ROLL_DESCRIPTION", desc);
+            LanguageAPI.Add("AETXEL_UTILITY_HOOK_NAME", "Heated Hook");
+            LanguageAPI.Add("AETXEL_UTILITY_HOOK_DESCRIPTION", desc);
 
             SkillDef mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
             mySkillDef.activationState = new SerializableEntityStateType(typeof(Speed));
             mySkillDef.activationStateMachineName = "Body";
-            mySkillDef.baseRechargeInterval = 8;
+            mySkillDef.baseRechargeInterval = 7;
             mySkillDef.baseMaxStock = 1;
             mySkillDef.beginSkillCooldownOnSkillEnd = true;
             mySkillDef.canceledFromSprinting = false;
@@ -339,9 +373,10 @@ namespace Aetxel
             mySkillDef.requiredStock = 1;
             mySkillDef.shootDelay = 0f;
             mySkillDef.stockToConsume = 1;
-            mySkillDef.skillDescriptionToken = "AETXEL_UTILITY_ROLL_DESCRIPTION";
-            mySkillDef.skillName = "AETXEL_UTILITY_ROLL_NAME";
-            mySkillDef.skillNameToken = "AETXEL_UTILITY_ROLL_NAME";
+            mySkillDef.icon = Assets.icon3;
+            mySkillDef.skillDescriptionToken = "AETXEL_UTILITY_HOOK_DESCRIPTION";
+            mySkillDef.skillName = "AETXEL_UTILITY_HOOK_NAME";
+            mySkillDef.skillNameToken = "AETXEL_UTILITY_HOOK_NAME";
 
             LoadoutAPI.AddSkillDef(mySkillDef);
 
@@ -364,16 +399,16 @@ namespace Aetxel
         {
             SkillLocator component = myCharacter.GetComponent<SkillLocator>();
 
-            string desc = "Throw an explosive piece of scrap that explodes after a slight delay, dealing <style=cIsDamage>1200% damage</style> in a large area.";
+            string desc = "Quickly dig down into the ground, obscuring yourself from sight and increasing movement speed by 40%. After 3 seconds, emerge from the ground with a roaring flame, dealing 800% damage.";
 
-            LanguageAPI.Add("AETXEL_SPECIAL_BOMB_NAME", "Volatile Scrap");
-            LanguageAPI.Add("AETXEL_SPECIAL_BOMB_DESCRIPTION", desc);
+            LanguageAPI.Add("AETXEL_SPECIAL_BURROW_NAME", "Molten Earth");
+            LanguageAPI.Add("AETXEL_SPECIAL_BURROW_DESCRIPTION", desc);
 
             SkillDef mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
             mySkillDef.activationState = new SerializableEntityStateType(typeof(Bomb));
             mySkillDef.activationStateMachineName = "Weapon";
             mySkillDef.baseMaxStock = 1;
-            mySkillDef.baseRechargeInterval = 9;
+            mySkillDef.baseRechargeInterval = 8;
             mySkillDef.beginSkillCooldownOnSkillEnd = true;
             mySkillDef.canceledFromSprinting = false;
             mySkillDef.fullRestockOnAssign = true;
@@ -386,9 +421,10 @@ namespace Aetxel
             mySkillDef.requiredStock = 1;
             mySkillDef.shootDelay = 0f;
             mySkillDef.stockToConsume = 1;
-            mySkillDef.skillDescriptionToken = "AETXEL_SPECIAL_BOMB_DESCRIPTION";
-            mySkillDef.skillName = "AETXEL_SPECIAL_BOMB_NAME";
-            mySkillDef.skillNameToken = "AETXEL_SPECIAL_BOMB_NAME";
+            mySkillDef.icon = Assets.icon4;
+            mySkillDef.skillDescriptionToken = "AETXEL_SPECIAL_BURROW_DESCRIPTION";
+            mySkillDef.skillName = "AETXEL_SPECIAL_BURROW_NAME";
+            mySkillDef.skillNameToken = "AETXEL_SPECIAL_BURROW_NAME";
 
             LoadoutAPI.AddSkillDef(mySkillDef);
 
@@ -436,6 +472,19 @@ namespace Aetxel
             ProjectileCatalog.getAdditionalEntries += delegate (List<GameObject> list)
             {
                 list.Add(AetxelMod.Bomb);
+            };
+            AetxelMod.Tornado = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("prefabs/projectiles/Fireball"), "prefabs/projectiles/AetxelFireball", true, "C:Aetxel.cs", "RegisterProjectiles", 422);
+            var boomerangComponent = Tornado.GetComponent<BoomerangProjectile>();
+            boomerangComponent.canHitWorld = false;
+            boomerangComponent.impactSpark = null;
+            boomerangComponent.travelSpeed = 80;
+
+            AetxelMod.Tornado.GetComponent<SphereCollider>().transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+            AetxelMod.Tornado.AddComponent<NetworkIdentity>();
+            PrefabAPI.RegisterNetworkPrefab(AetxelMod.Tornado, "C:Aetxel.cs", "Prefabs/Projectiles/AetxelBomb", 43);
+            ProjectileCatalog.getAdditionalEntries += delegate (List<GameObject> list)
+            {
+                list.Add(AetxelMod.Tornado);
             };
         }
         public class MenuAnim : MonoBehaviour

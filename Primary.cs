@@ -20,7 +20,7 @@ namespace EntityStates.Aetxel.Weapon
 			string muzzleName = "MuzzleCenter";
 			if (Scattergun.effectPrefab)
 			{
-				EffectManager.SimpleMuzzleFlash(FireShotgun.hitEffectPrefab, base.gameObject, muzzleName, false);
+				EffectManager.SimpleMuzzleFlash(FireShotgun.effectPrefab, base.gameObject, muzzleName, false);
 			}
 			if (base.isAuthority)
 			{
@@ -31,16 +31,16 @@ namespace EntityStates.Aetxel.Weapon
 					origin = aimRay.origin,
 					aimVector = aimRay.direction,
 					minSpread = 1f,
-					maxSpread = 9f,
+					maxSpread = 10f,
 					bulletCount = (uint)Scattergun.bulletCount,
 					procCoefficient = 0.7f,
-					damage = 0.9f * this.damageStat,
+					damage = 0.85f * this.damageStat,
 					damageType = DamageType.Generic,
 					force = Scattergun.force,
 					falloffModel = BulletAttack.FalloffModel.DefaultBullet,
-					tracerEffectPrefab = FireBarrage.tracerEffectPrefab,
+					tracerEffectPrefab = FirePistol2.tracerEffectPrefab,
 					muzzleName = muzzleName,
-					hitEffectPrefab = FireBarrage.hitEffectPrefab,
+					hitEffectPrefab = FireShotgun.effectPrefab,
 					isCrit = Util.CheckRoll(this.critStat, base.characterBody.master),
 					HitEffectNormal = true,
 					radius = 0.8f
@@ -78,13 +78,13 @@ namespace EntityStates.Aetxel.Weapon
 		}
 
 		// Token: 0x040039DC RID: 14812
-		public static GameObject effectPrefab = FireShotgun.hitEffectPrefab;
+		public static GameObject effectPrefab = FireShotgun.effectPrefab;
 
 		// Token: 0x040039DD RID: 14813
 		public static GameObject hitEffectPrefab = FireShotgun.hitEffectPrefab;
 
 		// Token: 0x040039DE RID: 14814
-		public static GameObject tracerEffectPrefab = FireBarrage.tracerEffectPrefab;
+		public static GameObject tracerEffectPrefab = FirePistol2.tracerEffectPrefab;
 
 		// Token: 0x040039DF RID: 14815
 		public static float damageCoefficient = 0.95f;

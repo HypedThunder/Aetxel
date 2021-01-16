@@ -1,116 +1,80 @@
-﻿using RoR2;
+﻿using System;
+using RoR2;
+using RoR2.Projectile;
 using UnityEngine;
 using EntityStates.LemurianBruiserMonster;
-using EntityStates.LemurianMonster;
-using EntityStates.Wisp1Monster;
+using Aetxel;
 
 namespace EntityStates.Aetxel.Weapon2
 {
-	// Token: 0x02000AB9 RID: 2745
+	// Token: 0x02000AB3 RID: 2739
 	public class Fireball : BaseState
 	{
-		// Token: 0x06003E81 RID: 16001 RVA: 0x001053D8 File Offset: 0x001035D8
+		// Token: 0x06003E59 RID: 15961 RVA: 0x0010473C File Offset: 0x0010293C
 		public override void OnEnter()
 		{
 			base.OnEnter();
-			this.maxDuration = 0.6f / this.attackSpeedStat;
-			this.minDuration = 0.5f / this.attackSpeedStat;
+			this.duration = 1.3f / this.attackSpeedStat;
 			Ray aimRay = base.GetAimRay();
 			base.StartAimMode(aimRay, 2f, false);
-			Util.PlaySound(FireMegaFireball.attackString, base.gameObject);
 			base.PlayAnimation("Gesture", "FireFireball", "FireFireball.playbackRate", 1f);
 			string muzzleName = "MuzzleMouth";
-			if (Fireball.effectPrefab)
+			Util.PlaySound(FireMegaFireball.attackString, base.gameObject);
+			if (FireMegaFireball.muzzleflashEffectPrefab)
 			{
-				EffectManager.SimpleMuzzleFlash(FireFireball.effectPrefab, base.gameObject, muzzleName, false);
+				EffectManager.SimpleMuzzleFlash(FireMegaFireball.muzzleflashEffectPrefab, base.gameObject, muzzleName, false);
 			}
 			if (base.isAuthority)
 			{
-				new BulletAttack
-				{
-					owner = base.gameObject,
-					weapon = base.gameObject,
-					origin = aimRay.origin,
-					aimVector = aimRay.direction,
-					minSpread = 0f,
-					maxSpread = 0f,
-					bulletCount = (uint)Fireball.bulletCount,
-					procCoefficient = 1f,
-					damage = 5f * this.damageStat,
-					damageType = DamageType.IgniteOnHit,
-					force = 75f,
-					tracerEffectPrefab = FireEmbers.tracerEffectPrefab,
-					muzzleName = muzzleName,
-					falloffModel = BulletAttack.FalloffModel.None,
-					hitEffectPrefab = FireMegaFireball.muzzleflashEffectPrefab,
-					isCrit = Util.CheckRoll(this.critStat, base.characterBody.master),
-					HitEffectNormal = true,
-					radius = 1f
-				}.Fire();
+				ProjectileManager.instance.FireProjectile(AetxelMod.Tornado, aimRay.origin, Util.QuaternionSafeLookRotation(aimRay.direction), base.gameObject, this.damageStat * 5f, 0f, Util.CheckRoll(this.critStat, base.characterBody.master), DamageColorIndex.Default, null, -1f);
 			}
-			base.characterBody.AddSpreadBloom(5f);
 		}
 
-		// Token: 0x06003E82 RID: 16002 RVA: 0x00032FA7 File Offset: 0x000311A7
+		// Token: 0x06003E5A RID: 15962 RVA: 0x00032FA7 File Offset: 0x000311A7
 		public override void OnExit()
 		{
 			base.OnExit();
 		}
 
-		// Token: 0x06003E83 RID: 16003 RVA: 0x001055E0 File Offset: 0x001037E0
+		// Token: 0x06003E5B RID: 15963 RVA: 0x00104861 File Offset: 0x00102A61
 		public override void FixedUpdate()
 		{
 			base.FixedUpdate();
-			this.buttonReleased |= !base.inputBank.skill1.down;
-			if (base.fixedAge >= this.maxDuration && base.isAuthority)
+			if (base.fixedAge >= this.duration && base.isAuthority)
 			{
 				this.outer.SetNextStateToMain();
 				return;
 			}
 		}
 
-		// Token: 0x06003E84 RID: 16004 RVA: 0x00105635 File Offset: 0x00103835
+		// Token: 0x06003E5C RID: 15964 RVA: 0x0000CFF7 File Offset: 0x0000B1F7
 		public override InterruptPriority GetMinimumInterruptPriority()
 		{
-			if (this.buttonReleased && base.fixedAge >= this.minDuration)
-			{
-				return InterruptPriority.Skill;
-			}
 			return InterruptPriority.Skill;
 		}
 
+		// Token: 0x04003997 RID: 14743
+		public static GameObject effectPrefab;
 
-		// Token: 0x040039DC RID: 14812
-		public static GameObject effectPrefab = FireFireball.effectPrefab;
+		// Token: 0x04003998 RID: 14744
+		public static GameObject projectilePrefab;
 
-		// Token: 0x040039DF RID: 14815
-		public static float damageCoefficient = 0.95f;
+		// Token: 0x04003999 RID: 14745
+		public static float damageCoefficient;
 
-		// Token: 0x040039E0 RID: 14816
-		public static float force = 5f;
+		// Token: 0x0400399A RID: 14746
+		public static float force;
 
-		// Token: 0x040039E1 RID: 14817
-		public static int bulletCount = 1;
+		// Token: 0x0400399B RID: 14747
+		public static float selfForce;
 
-		// Token: 0x040039E2 RID: 14818
-		public static float baseMaxDuration = 3f;
+		// Token: 0x0400399C RID: 14748
+		public static float baseDuration = 2f;
 
-		// Token: 0x040039E3 RID: 14819
-		public static float baseMinDuration = 3f;
+		// Token: 0x0400399D RID: 14749
+		private float duration;
 
-		// Token: 0x040039E5 RID: 14821
-		public static float recoilAmplitude = 0.2f;
-
-		// Token: 0x040039E6 RID: 14822
-		public static float spreadBloomValue = 0.3f;
-
-		// Token: 0x040039E7 RID: 14823
-		private float maxDuration;
-
-		// Token: 0x040039E8 RID: 14824
-		private float minDuration;
-
-		// Token: 0x040039E9 RID: 14825
-		private bool buttonReleased;
+		// Token: 0x0400399E RID: 14750
+		public int bulletCountCurrent = 1;
 	}
 }

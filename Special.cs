@@ -19,7 +19,7 @@ namespace EntityStates.Aetxel.Weapon4
 			base.StartAimMode(aimRay, 2f, false);
 			base.PlayAnimation("Gesture", "Bite", "Bite.playbackRate", this.duration);
 			string muzzleName = "MuzzleMouth";
-			Util.PlaySound(EntityStates.RoboBallBoss.Weapon.FireEyeBlast.attackString, base.gameObject);
+			Util.PlaySound(EntityStates.RoboBallBoss.Weapon.FireSuperEyeblast.attackString, base.gameObject);
 			if (FireMegaFireball.muzzleflashEffectPrefab)
 			{
 				EffectManager.SimpleMuzzleFlash(FireMegaFireball.muzzleflashEffectPrefab, base.gameObject, muzzleName, false);

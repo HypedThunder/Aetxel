@@ -6,14 +6,13 @@ namespace Aetxel
 {
     public static class Assets
     {
-        public static AssetBundle AssassinAssetBundle = LoadAssetBundle(RealAssassin.Properties.Resources.assassinassets);
+        public static AssetBundle AetxelAssetBundle = LoadAssetBundle(Aetxel.Properties.Resources.aetxelassets);
 
-        public static Texture charPortrait = AssassinAssetBundle.LoadAsset<Texture>("Icon");
-        public static Sprite iconP = AssassinAssetBundle.LoadAsset<Sprite>("iconP");
-        public static Sprite icon1 = AssassinAssetBundle.LoadAsset<Sprite>("icon1");
-        public static Sprite icon2 = AssassinAssetBundle.LoadAsset<Sprite>("icon2");
-        public static Sprite icon3 = AssassinAssetBundle.LoadAsset<Sprite>("icon3");
-        public static Sprite icon4 = AssassinAssetBundle.LoadAsset<Sprite>("icon4");
+        public static Sprite icon1 = AetxelAssetBundle.LoadAsset<Sprite>("icon14");
+        public static Sprite icon1b = AetxelAssetBundle.LoadAsset<Sprite>("icon1b 1");
+        public static Sprite icon2 = AetxelAssetBundle.LoadAsset<Sprite>("icon12");
+        public static Sprite icon3 = AetxelAssetBundle.LoadAsset<Sprite>("icon11");
+        public static Sprite icon4 = AetxelAssetBundle.LoadAsset<Sprite>("icon13");
 
         static AssetBundle LoadAssetBundle(Byte[] resourceBytes)
         {
